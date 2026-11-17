@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebCraft AI — Build Websites with AI</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ───────────────────────── SIDEBAR ───────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">WebCraft <span class="logo-ai">AI</span></span>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">&#8249;</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" id="btnChat" onclick="showPanel('chat')">
+        <span class="nav-icon">💬</span><span class="nav-label">Chat</span>
+      </button>
+      <button class="nav-btn" id="btnPreview" onclick="showPanel('preview')" disabled>
+        <span class="nav-icon">🌐</span><span class="nav-label">Preview</span>
+      </button>
+      <button class="nav-btn" id="btnCode" onclick="showPanel('code')" disabled>
+        <span class="nav-icon">📄</span><span class="nav-label">Code</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="new-btn" onclick="resetAll()">
+        <span>＋</span> New Website
+      </button>
+    </div>
+  </aside>
+
+  <!-- ───────────────────────── MAIN ───────────────────────── -->
+  <main class="main" id="main">
+
+    <!-- CHAT PANEL -->
+    <section class="panel" id="panelChat">
+
+      <div class="panel-header">
+        <h1 class="panel-title">Build a Website with AI</h1>
+        <p class="panel-subtitle">Describe your website idea and our AI will ask the right questions, then build it for you.</p>
+      </div>
+
+      <div class="chat-window" id="chatWindow">
+        <!-- Messages injected here -->
+        <div class="welcome-card" id="welcomeCard">
+          <div class="welcome-icon">🚀</div>
+          <h2>What website do you want to build?</h2>
+          <p>Type your idea below — a portfolio, landing page, restaurant site, SaaS homepage, or anything else.</p>
+          <div class="example-chips">
+            <button class="chip" onclick="fillPrompt('A portfolio website for a graphic designer')">Portfolio site</button>
+            <button class="chip" onclick="fillPrompt('A landing page for a fitness app')">Fitness app landing</button>
+            <button class="chip" onclick="fillPrompt('A restaurant website with menu and reservations')">Restaurant site</button>
+            <button class="chip" onclick="fillPrompt('A SaaS product homepage for a project management tool')">SaaS homepage</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions form (hidden until clarify step) -->
+      <div class="questions-panel" id="questionsPanel" style="display:none;">
+        <div class="questions-header">
+          <span class="q-icon">🤔</span>
+          <div>
+            <h3>A few quick questions</h3>
+            <p>Your answers help the AI build exactly what you need.</p>
+          </div>
+        </div>
+        <form id="questionsForm">
+          <div id="questionsList"></div>
+          <button type="submit" class="btn-primary" id="btnSubmitAnswers">
+            <span class="btn-text">Generate Website</span>
+            <span class="btn-icon">✨</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Prompt input -->
+      <div class="input-area" id="inputArea">
+        <div class="input-wrapper">
+          <textarea
+            id="promptInput"
+            class="prompt-input"
+            placeholder="Describe the website you want to build…"
+            rows="1"
+            maxlength="2000"
+          ></textarea>
+          <button class="send-btn" id="sendBtn" onclick="handleSend()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+        <p class="input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</p>
+      </div>
+    </section>
+
+    <!-- PREVIEW PANEL -->
+    <section class="panel hidden" id="panelPreview">
+      <div class="panel-header preview-header">
+        <div>
+          <h2 class="panel-title">Live Preview</h2>
+          <p class="panel-subtitle" id="previewLabel">Your generated website</p>
+        </div>
+        <div class="preview-actions">
+          <button class="btn-secondary" onclick="downloadWebsite()">⬇ Download HTML</button>
+          <button class="btn-secondary" onclick="openFullscreen()">⛶ Fullscreen</button>
+        </div>
+      </div>
+      <div class="iframe-wrapper">
+        <div class="browser-bar">
+          <div class="browser-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="browser-url">preview.webcraft.ai</div>
+        </div>
+        <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin" title="Website Preview"></iframe>
+      </div>
+    </section>
+
+    <!-- CODE PANEL -->
+    <section class="panel hidden" id="panelCode">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Source Code</h2>
+          <p class="panel-subtitle">Full HTML of your generated website</p>
+        </div>
+        <div class="preview-actions">
+          <button class="btn-secondary" onclick="copyCode()">📋 Copy</button>
+          <button class="btn-secondary" onclick="downloadWebsite()">⬇ Download</button>
+        </div>
+      </div>
+      <div class="code-wrapper">
+        <pre id="codeBlock"><code id="codeContent"></code></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <p class="loading-text" id="loadingText">Thinking…</p>
+      <p class="loading-sub" id="loadingSub"></p>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
